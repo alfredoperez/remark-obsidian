@@ -1,5 +1,5 @@
-const wikiLinkPlugin = require('..')
-const { wikiLinkPlugin: namedWikiLinkPlugin } = require('..')
+const obsidianPlugin = require('..')
+const { obsidianPlugin: namedObsidianPlugin } = require('..')
 
 const assert = require('assert')
 const unified = require('unified')
@@ -8,11 +8,11 @@ const visit = require('unist-util-visit')
 const select = require('unist-util-select')
 const remark2markdown = require('remark-stringify')
 
-describe('remark-wiki-link-plus', () => {
+describe('remark-obsidian', () => {
   it('parses a wiki link that has a matching permalink', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         permalinks: ['test']
       })
 
@@ -29,10 +29,31 @@ describe('remark-wiki-link-plus', () => {
     })
   })
 
+  it('parses a wiki link and adds the Url Prefix', () => {
+    const processor = unified()
+      .use(markdown)
+      .use(obsidianPlugin, {
+        permalinks: ['test'],
+        urlPrefix: 'blog/'
+      })
+
+    var ast = processor.parse('[[test]]')
+    ast = processor.runSync(ast)
+
+    visit(ast, 'wikiLink', (node) => {
+      assert.equal(node.data.permalink, 'blog/test')
+      assert.equal(node.data.hName, 'a')
+      assert.equal(node.data.hProperties.href, '/blog/test')
+      assert.equal(node.data.hChildren[0].value, 'test')
+      assert.equal(node.data.exists, false) // TODO: investigate if this should be true
+      assert.equal(node.data.hProperties.className, 'internal new') // TODO: investigate if this should be just 'internal'
+    })
+  })
+
   it('parses a wiki link that has no matching permalink', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         permalinks: []
       })
 
@@ -52,7 +73,7 @@ describe('remark-wiki-link-plus', () => {
   it('handles wiki alias links with custom divider', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         permalinks: ['example/test']
       })
 
@@ -74,7 +95,7 @@ describe('remark-wiki-link-plus', () => {
   it('handles wiki links with heading', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         permalinks: ['example/test']
       })
 
@@ -91,10 +112,32 @@ describe('remark-wiki-link-plus', () => {
     })
   })
 
+  // it('handles wiki links with heading and custom Url prefix', () => {
+  //   const processor = unified()
+  //     .use(markdown)
+  //     .use(obsidianPlugin, {
+  //       permalinks: ['example/test'],
+  //       urlPrefix: 'blog/'
+  //     })
+  //
+  //   var ast = processor.parse('[[example/test#with heading]]')
+  //   ast = processor.runSync(ast)
+  //
+  //   visit(ast, 'wikiLink', node => {
+  //     assert.equal(node.data.permalink, '/blog/example/test#with-heading')
+  //     assert.equal(node.data.hName, 'a')
+  //     assert.equal(node.data.hProperties.href, '/blog/example/test#with-heading')
+  //     assert.equal(node.data.hChildren[0].value, '/blog/example/test#with heading')
+  //     // TODO: investigate if this should be false
+  //     assert.equal(node.data.exists, false)
+  //     assert.equal(node.data.hProperties.className, 'internal new')
+  //   })
+  // })
+
   it('handles wiki alias links with heading and custom divider', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         permalinks: ['example/test']
       })
 
@@ -114,7 +157,7 @@ describe('remark-wiki-link-plus', () => {
   it('handles a wiki link heading within the page', () => {
     const processor = unified()
       .use(markdown)
-      .use(wikiLinkPlugin)
+      .use(obsidianPlugin)
 
     var ast = processor.parse('[[#Heading]]')
     ast = processor.runSync(ast)
@@ -133,7 +176,7 @@ describe('remark-wiki-link-plus', () => {
     const processor = unified()
       .use(markdown, { gfm: true, footnotes: true, yaml: true })
       .use(remark2markdown)
-      .use(wikiLinkPlugin, { permalinks: ['wiki-link'] })
+      .use(obsidianPlugin, { permalinks: ['wiki-link'] })
 
     const stringified = processor.processSync('[[Wiki Link]]').contents.trim()
     assert.equal(stringified, '[[Wiki Link]]')
@@ -143,7 +186,7 @@ describe('remark-wiki-link-plus', () => {
     const processor = unified()
       .use(markdown, { gfm: true, footnotes: true, yaml: true })
       .use(remark2markdown)
-      .use(wikiLinkPlugin, {
+      .use(obsidianPlugin, {
         aliasDivider: ':'
       })
 
@@ -157,7 +200,7 @@ describe('remark-wiki-link-plus', () => {
 
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           pageResolver: identity,
           permalinks: ['A Page']
         })
@@ -175,7 +218,7 @@ describe('remark-wiki-link-plus', () => {
     it('uses newClassName', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           newClassName: 'new_page'
         })
 
@@ -190,7 +233,7 @@ describe('remark-wiki-link-plus', () => {
     it('uses hrefTemplate', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           hrefTemplate: (permalink) => permalink
         })
 
@@ -205,7 +248,7 @@ describe('remark-wiki-link-plus', () => {
     it('uses wikiLinkClassName', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           wikiLinkClassName: 'wiki_link',
           permalinks: ['a-page']
         })
@@ -223,7 +266,7 @@ describe('remark-wiki-link-plus', () => {
     it('handles open wiki links', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           permalinks: []
         })
 
@@ -236,7 +279,7 @@ describe('remark-wiki-link-plus', () => {
     it('handles open wiki links at end of file', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           permalinks: []
         })
 
@@ -249,7 +292,7 @@ describe('remark-wiki-link-plus', () => {
     it('handles open wiki links with partial data', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           permalinks: []
         })
 
@@ -262,7 +305,7 @@ describe('remark-wiki-link-plus', () => {
     it('handles open wiki links with partial alias divider', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           aliasDivider: '::',
           permalinks: []
         })
@@ -276,7 +319,7 @@ describe('remark-wiki-link-plus', () => {
     it('handles open wiki links with partial alias', () => {
       const processor = unified()
         .use(markdown)
-        .use(wikiLinkPlugin, {
+        .use(obsidianPlugin, {
           permalinks: []
         })
 
@@ -288,6 +331,6 @@ describe('remark-wiki-link-plus', () => {
   })
 
   it('exports the plugin with named exports', () => {
-    assert.equal(wikiLinkPlugin, namedWikiLinkPlugin)
+    assert.equal(obsidianPlugin, namedObsidianPlugin)
   })
 })

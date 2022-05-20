@@ -1,4 +1,4 @@
-# remark-wiki-link-plus
+# remark-obsidian
 
 Parse and render wiki-style links in markdown especially Obsidian style links.
 
@@ -14,13 +14,15 @@ Using obsidian, when we type in wiki link syntax for eg. `[[wiki_link]]` it woul
 - [x] Support `[[Internal link#heading|With custom text]]`
 
 Future support:
+- [ ] Support callouts
+- [ ] Support `==highlight text==`
 - [ ] Support `![[Embed note]]`
 - [ ] Support `![[Embed note#heading]]`
 
 ## Installation
 
 ```bash
-npm install remark-wiki-link-plus
+npm install remark-obsidian
 ```
 
 ## Usage
@@ -28,16 +30,17 @@ npm install remark-wiki-link-plus
 ```javascript
 const unified = require('unified')
 const markdown = require('remark-parse')
-const wikiLinkPlugin = require('remark-wiki-link-plus');
+const obsidianPlugin = require('remark-obsidian');
 
 let processor = unified()
     .use(markdown, { gfm: true })
-    .use(wikiLinkPlugin)
+    .use(obsidianPlugin)
 ```
 
 ### Configuration options
 
-* `options.markdownFolder [String]`: A string that points to the content folder.
+* `markdownFolder [String]`: A string that points to the content folder.
+* `urlPrefix [String]`: A string that adds an Url Prefix .
 
   The default `hrefTemplate` is:
   
