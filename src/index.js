@@ -5,7 +5,7 @@ import { getFiles } from './getFiles'
 
 let warningIssued
 
-function wikiLinkPlugin (opts = { markdownFolder: '' }) {
+function obsidianPlugin (opts = { markdownFolder: '', urlPrefix: '' }) {
   const data = this.data()
 
   function add (field, value) {
@@ -22,7 +22,7 @@ function wikiLinkPlugin (opts = { markdownFolder: '' }) {
         this.Compiler.prototype.visitors))) {
     warningIssued = true
     console.warn(
-      '[remark-wiki-link] Warning: please upgrade to remark 13 to use this plugin'
+      '[remark-obsidian] Warning: please upgrade to remark 13 to use this plugin'
     )
   }
 
@@ -35,14 +35,18 @@ function wikiLinkPlugin (opts = { markdownFolder: '' }) {
         [, heading] = name.split('#')
         name = name.replace(`#${heading}`, '')
       }
+
+      const prefix = opts.urlPrefix ? opts.urlPrefix : ''
       if (opts.permalinks || opts.markdownFolder) {
         const url = opts.permalinks.find(p => p === name || (p.split('/').pop() === name && !opts.permalinks.includes(p.split('/').pop())))
         if (url) {
-          if (heading) return [`${url}#${heading}`.replace(/ /g, '-').toLowerCase()]
-          return [url.replace(/ /g, '-').toLowerCase()]
+          if (heading) {
+            return [prefix + `${url}#${heading}`.replace(/ /g, '-').toLowerCase()]
+          }
+          return [prefix + url.replace(/ /g, '-').toLowerCase()]
         }
       }
-      return [name.replace(/ /g, '-').toLowerCase()]
+      return [prefix + name.replace(/ /g, '-').toLowerCase()]
     },
     permalinks: opts.markdownFolder ? getFiles(opts.markdownFolder).map(file => file.replace('.md', '')) : opts.permalinks
   }
@@ -52,5 +56,5 @@ function wikiLinkPlugin (opts = { markdownFolder: '' }) {
   add('toMarkdownExtensions', toMarkdown(opts))
 }
 
-wikiLinkPlugin.wikiLinkPlugin = wikiLinkPlugin
-export default wikiLinkPlugin
+obsidianPlugin.obsidianPlugin = obsidianPlugin
+export default obsidianPlugin

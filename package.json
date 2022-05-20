@@ -1,23 +1,24 @@
 {
-  "name": "remark-wiki-link-plus",
-  "version": "1.0.0",
-  "description": "Parse and render wiki-style links in markdown especially Obsidian style links.",
+  "name": "remark-obsidian",
+  "version": "0.0.1",
+  "description": "Support for Obsidian features like wiki-style links, and callouts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/life-itself/remark-wiki-link-plus.git"
+    "url": "git+https://github.com/alfredoperez/remark-obsidian.git"
   },
   "keywords": [
     "remark",
     "remark-plugin",
+    "obsidian",
     "markdown",
     "gfm"
   ],
-  "author": "Life Itself",
+  "author": "Alfredo Perez",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/life-itself/remark-wiki-link-plus/issues"
+    "url": "https://github.com/alfredoperez/remark-obsidian/issues"
   },
-  "homepage": "https://github.com/life-itself/remark-wiki-link-plus#readme",
+  "homepage": "https://github.com/alfredoperez/remark-obsidian#readme",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "browser": "dist/index.umd.js",
